@@ -9,6 +9,7 @@
 static int queue[MAX_PROCESSES];
 static int head = 0;
 static int tail = 0;
+static int queued = 0;
 static bool in_queue[MAX_PROCESSES + 1];
 
 void scheduler_init(void) {
@@ -16,6 +17,7 @@ void scheduler_init(void) {
     memset(in_queue, 0, sizeof(in_queue));
     head = 0;
     tail = 0;
+    queued = 0;
 }
 
 void scheduler_add(int pid) {
@@ -25,13 +27,17 @@ void scheduler_add(int pid) {
     if (in_queue[pid]) {
         return;
     }
+    if (queued == MAX_PROCESSES) {
+        return;
+    }
     queue[tail] = pid;
     tail = (tail + 1) % MAX_PROCESSES;
     in_queue[pid] = true;
+    queued++;
 }
 
 void scheduler_tick(void) {
-    if (head == tail) {
+    if (queued == 0) {
         printf("[Scheduler] no ready processes.\n");
         return;
     }
@@ -39,6 +45,7 @@ void scheduler_tick(void) {
     int pid = queue[head];
     head = (head + 1) % MAX_PROCESSES;
     in_queue[pid] = false;
+    queued--;
 
     Process *proc = process_get(pid);
     if (!proc) {
