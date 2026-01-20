@@ -1,0 +1,471 @@
+# Mini-OS `src/` Line-by-Line Guide
+
+This document explains each C source file in `src/` line by line, matching the
+current repository contents.
+
+## `src/apps.c`
+
+- Line 1: Include the public app registry interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include standard I/O for user interaction.
+- Line 4: Include string utilities for comparisons.
+- Line 5: Blank line separating includes from code.
+- Line 6: Define the `echo` app entry point.
+- Line 7: Allocate a buffer for input text.
+- Line 8: Prompt the user for text.
+- Line 9: Read a line of input into the buffer.
+- Line 10: Print back the user input.
+- Line 11: Close the `if` block.
+- Line 12: Close the `app_echo` function.
+- Line 13: Blank line separating functions.
+- Line 14: Define the `calc` app entry point.
+- Line 15: Initialize the first operand.
+- Line 16: Initialize the second operand.
+- Line 17: Prompt for two integers.
+- Line 18: Parse two integers from stdin.
+- Line 19: Print the sum if parsing succeeds.
+- Line 20: Otherwise branch for invalid input.
+- Line 21: Print an error message.
+- Line 22: Close the `if`/`else` block.
+- Line 23: Declare a temporary character for input cleanup.
+- Line 24: Consume remaining characters until newline/EOF.
+- Line 25: Close the cleanup loop.
+- Line 26: Close the `app_calc` function.
+- Line 27: Blank line separating functions.
+- Line 28: Define the `sleep` app entry point.
+- Line 29: Initialize the tick counter.
+- Line 30: Prompt for tick count.
+- Line 31: Parse the tick count.
+- Line 32: Print a message announcing the sleep duration.
+- Line 33: Start a loop for each simulated tick.
+- Line 34: Print the current tick number.
+- Line 35: Close the tick loop.
+- Line 36: Otherwise branch for invalid input.
+- Line 37: Print an error message.
+- Line 38: Close the `if`/`else` block.
+- Line 39: Declare a temporary character for input cleanup.
+- Line 40: Consume remaining characters until newline/EOF.
+- Line 41: Close the cleanup loop.
+- Line 42: Close the `app_sleep` function.
+- Line 43: Blank line separating definitions.
+- Line 44: Define a static table of built-in apps.
+- Line 45: Register the `echo` app and its entry function.
+- Line 46: Register the `calc` app and its entry function.
+- Line 47: Register the `sleep` app and its entry function.
+- Line 48: Close the app table array.
+- Line 49: Blank line separating functions.
+- Line 50: Define the app subsystem initializer.
+- Line 51: Print how many apps are registered.
+- Line 52: Close `apps_init`.
+- Line 53: Blank line separating functions.
+- Line 54: Define the app lookup function by name.
+- Line 55: Compute the number of entries in the app table.
+- Line 56: Loop over each entry.
+- Line 57: Compare the requested name to the entry name.
+- Line 58: Return a pointer to the matching app.
+- Line 59: Close the `if` block.
+- Line 60: Close the loop.
+- Line 61: Return `NULL` if no app matches.
+- Line 62: Close `apps_lookup`.
+
+## `src/cli.c`
+
+- Line 1: Include the CLI interface definition.
+- Line 2: Blank line separating includes.
+- Line 3: Include `stdbool` for boolean types.
+- Line 4: Include standard I/O functions.
+- Line 5: Include string helpers.
+- Line 6: Blank line separating includes from project headers.
+- Line 7: Include the apps registry for `run`.
+- Line 8: Include filesystem functions for `touch`/`ls`.
+- Line 9: Include kernel state controls.
+- Line 10: Include memory allocator interfaces.
+- Line 11: Include process management interfaces.
+- Line 12: Include scheduler interfaces.
+- Line 13: Blank line separating helpers.
+- Line 14: Define a helper to print command help text.
+- Line 15: Print the header for commands.
+- Line 16: Print `help` command description.
+- Line 17: Print `ps` command description.
+- Line 18: Print `create` command description.
+- Line 19: Print `run` command description.
+- Line 20: Print `schedule` command description.
+- Line 21: Print `mem` command description.
+- Line 22: Print `alloc` command description.
+- Line 23: Print `free` command description.
+- Line 24: Print `touch` command description.
+- Line 25: Print `ls` command description.
+- Line 26: Print `exit` command description.
+- Line 27: Close `print_help`.
+- Line 28: Blank line separating helpers.
+- Line 29: Define helper to strip trailing newline.
+- Line 30: Measure input length.
+- Line 31: Return early for empty input.
+- Line 32: Close empty check.
+- Line 33: Check if last character is newline.
+- Line 34: Replace newline with string terminator.
+- Line 35: Close newline check.
+- Line 36: Close `trim_newline`.
+- Line 37: Blank line separating functions.
+- Line 39: Define the main CLI loop.
+- Line 40: Allocate input buffer.
+- Line 41: Blank line for readability.
+- Line 42: Loop while the kernel is running.
+- Line 43: Print the prompt.
+- Line 44: Read a line of input.
+- Line 45: Break the loop on EOF.
+- Line 46: Close the EOF check.
+- Line 47: Remove the newline from the input.
+- Line 48: Blank line before command parsing.
+- Line 49: If input is `help`, print help.
+- Line 50: Call `print_help`.
+- Line 51: Else if input is `ps`, list processes.
+- Line 52: Call `process_list`.
+- Line 53: Else if input starts with `create`.
+- Line 54: Extract the process name.
+- Line 55: Create the process.
+- Line 56: If creation failed, report error.
+- Line 57: Print failure message.
+- Line 58: Otherwise, add process to scheduler.
+- Line 59: Enqueue the new process.
+- Line 60: Print the new PID.
+- Line 61: Close create handling.
+- Line 62: Else if input starts with `run`.
+- Line 63: Extract the app name.
+- Line 64: Look up the app entry.
+- Line 65: If lookup fails, report unknown app.
+- Line 66: Print unknown app message.
+- Line 67: Otherwise invoke the app entry.
+- Line 68: Call the app function.
+- Line 69: Close run handling.
+- Line 70: Else if input is `schedule`.
+- Line 71: Tick the scheduler once.
+- Line 72: Else if input is `mem`.
+- Line 73: Print memory status.
+- Line 74: Else if input starts with `alloc`.
+- Line 75: Initialize PID variable.
+- Line 76: Initialize block count.
+- Line 77: Parse PID and block count.
+- Line 78: Allocate memory blocks.
+- Line 79: If allocation fails, report error.
+- Line 80: Print allocation failure.
+- Line 81: Otherwise report allocation success.
+- Line 82: Print allocation success message.
+- Line 83: Close allocation reporting.
+- Line 84: Otherwise show usage for invalid args.
+- Line 85: Print usage message.
+- Line 86: Close alloc handling.
+- Line 87: Else if input starts with `free`.
+- Line 88: Initialize PID variable.
+- Line 89: Parse PID.
+- Line 90: Free memory tracked for the process.
+- Line 91: Print confirmation.
+- Line 92: Otherwise show usage for invalid args.
+- Line 93: Print usage message.
+- Line 94: Close free handling.
+- Line 95: Else if input starts with `touch`.
+- Line 96: Extract the filename.
+- Line 97: Create the file in the in-memory FS.
+- Line 98: Print file creation success.
+- Line 99: Otherwise print failure.
+- Line 100: Print failure message.
+- Line 101: Close touch handling.
+- Line 102: Else if input is `ls`.
+- Line 103: List files.
+- Line 104: Else if input is `exit`.
+- Line 105: Shutdown the kernel.
+- Line 106: Else if input is empty, skip.
+- Line 107: Continue loop for empty input.
+- Line 108: Otherwise print unknown command.
+- Line 109: Print unknown command message.
+- Line 110: Close command handling.
+- Line 111: Close the main loop.
+- Line 112: Close `cli_loop`.
+
+## `src/filesystem.c`
+
+- Line 1: Include the filesystem interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include standard I/O for output.
+- Line 4: Include string helpers.
+- Line 5: Blank line separating includes from globals.
+- Line 6: Declare the file name storage table.
+- Line 7: Track the current number of files.
+- Line 8: Blank line separating functions.
+- Line 9: Initialize the filesystem state.
+- Line 10: Zero the filenames array.
+- Line 11: Reset the file counter.
+- Line 12: Close `fs_init`.
+- Line 13: Blank line separating functions.
+- Line 14: Create a file entry by name.
+- Line 15: Reject creation if at capacity.
+- Line 16: Return failure.
+- Line 17: Close the capacity check.
+- Line 18: Blank line separating loop.
+- Line 19: Loop over existing files.
+- Line 20: Reject duplicates.
+- Line 21: Return failure for duplicate name.
+- Line 22: Close duplicate check.
+- Line 23: Close the loop.
+- Line 24: Blank line before copying.
+- Line 25: Copy the name into storage.
+- Line 26: Ensure null termination.
+- Line 27: Increment the file count.
+- Line 28: Return success.
+- Line 29: Close `fs_create`.
+- Line 30: Blank line separating functions.
+- Line 31: List all files.
+- Line 32: If no files, report empty list.
+- Line 33: Print "no files" message.
+- Line 34: Return early for empty list.
+- Line 35: Close empty check.
+- Line 36: Blank line before listing.
+- Line 37: Loop over each file.
+- Line 38: Print the filename.
+- Line 39: Close the loop.
+- Line 40: Close `fs_list`.
+
+## `src/kernel.c`
+
+- Line 1: Include the kernel interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include standard I/O.
+- Line 4: Blank line separating includes from project headers.
+- Line 5: Include app subsystem interface.
+- Line 6: Include filesystem subsystem interface.
+- Line 7: Include memory subsystem interface.
+- Line 8: Include process subsystem interface.
+- Line 9: Include scheduler subsystem interface.
+- Line 10: Blank line separating globals.
+- Line 11: Track kernel running state.
+- Line 12: Blank line separating functions.
+- Line 13: Boot the kernel and initialize subsystems.
+- Line 14: Print boot message.
+- Line 15: Initialize process management.
+- Line 16: Initialize scheduler state.
+- Line 17: Initialize memory manager.
+- Line 18: Initialize filesystem.
+- Line 19: Initialize app registry.
+- Line 20: Mark kernel as running.
+- Line 21: Close `kernel_boot`.
+- Line 22: Blank line separating functions.
+- Line 23: Shut down the kernel.
+- Line 24: Print shutdown message.
+- Line 25: Mark kernel as not running.
+- Line 26: Close `kernel_shutdown`.
+- Line 27: Blank line separating functions.
+- Line 28: Return whether the kernel is running.
+- Line 29: Return the running state flag.
+- Line 30: Close `kernel_is_running`.
+
+## `src/memory.c`
+
+- Line 1: Include the memory interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include `stdbool` for boolean types.
+- Line 4: Include standard I/O for status output.
+- Line 5: Include string utilities for `memset`.
+- Line 6: Blank line separating includes from project headers.
+- Line 7: Include process accessors for updating allocation counts.
+- Line 8: Blank line separating globals.
+- Line 9: Track ownership of each memory block.
+- Line 10: Blank line separating functions.
+- Line 11: Initialize memory pool ownership to zero.
+- Line 12: Zero the ownership array.
+- Line 13: Close `memory_init`.
+- Line 14: Blank line separating functions.
+- Line 15: Allocate a number of blocks for a PID.
+- Line 16: Validate block count range.
+- Line 17: Return failure on invalid request.
+- Line 18: Close validation.
+- Line 19: Blank line separating allocation loop.
+- Line 20: Track allocated block count.
+- Line 21: Iterate over the pool until enough blocks found.
+- Line 22: Check for free block.
+- Line 23: Assign block to PID.
+- Line 24: Increment allocated count.
+- Line 25: Close block assignment.
+- Line 26: Close loop.
+- Line 27: Blank line separating failure cleanup.
+- Line 28: If we couldn't allocate enough, roll back.
+- Line 29: Iterate to free partially allocated blocks.
+- Line 30: Identify blocks owned by the PID.
+- Line 31: Clear block ownership.
+- Line 32: Close rollback `if`.
+- Line 33: Close rollback loop.
+- Line 34: Return failure after rollback.
+- Line 35: Close allocation failure branch.
+- Line 36: Blank line separating process update.
+- Line 37: Fetch the process entry.
+- Line 38: If process exists, update its allocation count.
+- Line 39: Add allocated blocks to the process.
+- Line 40: Close process update.
+- Line 41: Blank line separating return.
+- Line 42: Return the number of allocated blocks.
+- Line 43: Close `memory_allocate`.
+- Line 44: Blank line separating functions.
+- Line 45: Free all blocks owned by a PID.
+- Line 46: Iterate over the pool.
+- Line 47: Check for blocks owned by PID.
+- Line 48: Clear ownership.
+- Line 49: Close ownership check.
+- Line 50: Close loop.
+- Line 51: Close `memory_free`.
+- Line 52: Blank line separating functions.
+- Line 53: Print memory usage status.
+- Line 54: Initialize used-block counter.
+- Line 55: Iterate over the pool.
+- Line 56: Count non-zero ownership entries.
+- Line 57: Increment used counter.
+- Line 58: Close used check.
+- Line 59: Close loop.
+- Line 60: Print used/total blocks and block size.
+- Line 61: Print used count value.
+- Line 62: Print total block count.
+- Line 63: Print block size.
+- Line 64: Close `memory_status`.
+
+## `src/process.c`
+
+- Line 1: Include the process interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include standard I/O for listing.
+- Line 4: Include string helpers.
+- Line 5: Blank line separating includes from project headers.
+- Line 6: Include memory helpers.
+- Line 7: Blank line separating globals.
+- Line 8: Declare the process table.
+- Line 9: Track the next PID to assign.
+- Line 10: Blank line separating functions.
+- Line 11: Initialize the process table.
+- Line 12: Zero the process array.
+- Line 13: Reset PID counter.
+- Line 14: Close `process_init`.
+- Line 15: Blank line separating functions.
+- Line 16: Create a new process.
+- Line 17: Iterate over process table slots.
+- Line 18: Find a free or terminated slot.
+- Line 19: Point to the chosen process slot.
+- Line 20: Assign a new PID.
+- Line 21: Copy the process name.
+- Line 22: Ensure the name is null-terminated.
+- Line 23: Mark the process as ready.
+- Line 24: Set thread count to 1.
+- Line 25: Assign initial thread ID.
+- Line 26: Set thread state to ready.
+- Line 27: Initialize allocated block tracking.
+- Line 28: Return the new PID.
+- Line 29: Close slot check.
+- Line 30: Close loop.
+- Line 31: Blank line separating failure path.
+- Line 32: Return failure if no slot is available.
+- Line 33: Close `process_create`.
+- Line 34: Blank line separating functions.
+- Line 35: Fetch a process by PID.
+- Line 36: Iterate over process table slots.
+- Line 37: Match PID and non-terminated state.
+- Line 38: Return matching process pointer.
+- Line 39: Close match check.
+- Line 40: Close loop.
+- Line 41: Return `NULL` if not found.
+- Line 42: Close `process_get`.
+- Line 43: Blank line separating functions.
+- Line 44: Print the process list header.
+- Line 45: Start process table iteration.
+- Line 46: Skip empty or terminated entries.
+- Line 47: Default state string to READY.
+- Line 48: Switch to RUNNING if applicable.
+- Line 49: Switch to WAITING if applicable.
+- Line 50: Close state check.
+- Line 51: Print process details.
+- Line 52: Print PID value.
+- Line 53: Print state string.
+- Line 54: Print name string.
+- Line 55: Print thread count.
+- Line 56: Print allocated blocks.
+- Line 57: Close print call.
+- Line 58: Close entry check.
+- Line 59: Close loop.
+- Line 60: Close `process_list`.
+- Line 61: Blank line separating functions.
+- Line 62: Set process and thread state.
+- Line 63: Look up the process.
+- Line 64: Return early if not found.
+- Line 65: Close not-found check.
+- Line 66: Update process state.
+- Line 67: Loop over each thread.
+- Line 68: Set thread state.
+- Line 69: Close loop.
+- Line 70: Close `process_set_state`.
+- Line 71: Blank line separating functions.
+- Line 72: Free memory for a process.
+- Line 73: Look up the process.
+- Line 74: Return early if not found.
+- Line 75: Close not-found check.
+- Line 76: Release blocks in memory manager.
+- Line 77: Reset process allocation count.
+- Line 78: Close `process_free_memory`.
+
+## `src/scheduler.c`
+
+- Line 1: Include the scheduler interface.
+- Line 2: Blank line separating includes.
+- Line 3: Include `stdbool` for boolean types.
+- Line 4: Include standard I/O for logging.
+- Line 5: Include string utilities for `memset`.
+- Line 6: Blank line separating includes from project headers.
+- Line 7: Include process accessors.
+- Line 8: Blank line separating globals.
+- Line 9: Define the ready-queue storage.
+- Line 10: Track the queue head index.
+- Line 11: Track the queue tail index.
+- Line 12: Track how many entries are queued.
+- Line 13: Track whether a PID is already queued.
+- Line 14: Blank line separating functions.
+- Line 15: Initialize scheduler state.
+- Line 16: Zero the queue storage.
+- Line 17: Zero the in-queue tracking array.
+- Line 18: Reset head index.
+- Line 19: Reset tail index.
+- Line 20: Reset queue count.
+- Line 21: Close `scheduler_init`.
+- Line 22: Blank line separating functions.
+- Line 23: Add a PID to the ready queue.
+- Line 24: Validate PID range.
+- Line 25: Return early if invalid.
+- Line 26: Close PID check.
+- Line 27: Skip if already queued.
+- Line 28: Return early if already queued.
+- Line 29: Close in-queue check.
+- Line 30: Skip enqueue if queue is full.
+- Line 31: Return early if full.
+- Line 32: Close full check.
+- Line 33: Store PID at tail.
+- Line 34: Advance tail pointer.
+- Line 35: Mark PID as queued.
+- Line 36: Increment queued count.
+- Line 37: Close `scheduler_add`.
+- Line 38: Blank line separating functions.
+- Line 39: Run one scheduler tick.
+- Line 40: Check for empty queue.
+- Line 41: Print empty-queue message.
+- Line 42: Return early on empty queue.
+- Line 43: Close empty check.
+- Line 44: Blank line separating dequeue.
+- Line 45: Fetch PID at head.
+- Line 46: Advance head pointer.
+- Line 47: Mark PID as no longer queued.
+- Line 48: Decrement queued count.
+- Line 49: Blank line separating process lookup.
+- Line 50: Fetch the process entry.
+- Line 51: Handle missing process.
+- Line 52: Print missing-process message.
+- Line 53: Return early.
+- Line 54: Close missing-process check.
+- Line 55: Blank line separating state changes.
+- Line 56: Mark the process as running.
+- Line 57: Print a scheduler run message.
+- Line 58: Mark the process as ready again.
+- Line 59: Blank line before re-queueing.
+- Line 60: Re-add the PID to the queue.
+- Line 61: Close `scheduler_tick`.
